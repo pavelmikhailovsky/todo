@@ -12,7 +12,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NotesSerializer(serializers.HyperlinkedModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(required=False)
     class Meta:
         model = Notes
-        fields = ['name', 'text', 'create_at', 'update_at', 'user']
+        fields = ['id', 'name', 'text', 'create_at', 'update_at', 'user']
