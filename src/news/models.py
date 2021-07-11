@@ -9,7 +9,7 @@ class News(models.Model):
     create_at = models.DateTimeField('Время создания', auto_now_add=True)
     
     class Meta:
-        verbose_name = 'Новость'
+        verbose_name = 'новость'
         verbose_name_plural = 'Новости'
         
     def __str__(self) -> str:

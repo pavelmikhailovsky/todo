@@ -11,3 +11,7 @@ class Notes(models.Model):
     
     def __str__(self) -> str:
         return f'{self.name} || {self.user}'
+    
+    class Meta:
+        verbose_name = 'заметка'
+        verbose_name_plural = 'Заметки'
