@@ -1,11 +1,13 @@
 from django.urls import path
 
-from .routers import urlpatterns as url
-from ..news.views import news_list
+from src.notes import views
+
+# from .routers import urlpatterns as url
 
 
 urlpatterns = [
-    path('news/', news_list, name='news-list'),
+    path('notes/', views.get_notes_list),
+    path('notes/<int:pk>/', views.get_notes_detail),
 ]
 
-urlpatterns += url
+# urlpatterns += url

@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 
 from rest_framework.test import APIClient, force_authenticate
 
-from .views import NotesViewSet
-
 
 # TODO НАПИСАТЬ НОРМ ТЕСТЫ!!!!11!!!!1111!!1
 class NotesTests(TestCase):

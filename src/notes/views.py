@@ -1,19 +1,42 @@
-from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.response import Response
 
 from .models import Notes
 from .serializers import NotesSerializer
 
 
-class NotesViewSet(viewsets.ModelViewSet):
-    """ Создание, вывод и редактирование заметок для определённого юзера """
-    queryset = Notes.objects.all()
-    serializer_class = NotesSerializer
-    
-    def get_queryset(self):
-        queryset = self.queryset
-        queryset = queryset.filter(user=self.request.user)
-        return queryset
+@api_view(['GET', 'POST'])
+def get_notes_list(request):
+    if request.method == 'GET':
+        notes = Notes.objects.all().order_by('-create_at')
+        serializer = NotesSerializer(notes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        serializer = NotesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-        
+
+@api_view(['GET', 'POST'])
+def get_notes_detail(request, pk):
+    try:
+        notes = Notes.objects.get(pk=pk)
+    except Notes.DoesNotExist:
+        notes = None
+        serializer = NotesSerializer(notes)
+        if serializer.is_valid():
+            pass  # незя по PEP в одну строку :(
+        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = NotesSerializer(notes)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        serializer = NotesSerializer(notes, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

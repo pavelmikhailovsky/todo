@@ -3,15 +3,15 @@ from django.db import models
 
 
 class Notes(models.Model):
-    name = models.CharField(max_length=250)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
     text = models.TextField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    create_at = models.DateTimeField(auto_now_add=True)
+    # update_at = models.CharField(default='Ещё не редактировался')
+    update_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     
     def __str__(self) -> str:
-        return f'{self.name} || {self.user}'
+        return f'{self.create_at} || {self.user}'
     
     class Meta:
-        verbose_name = 'заметка'
+        verbose_name = 'заметку'
         verbose_name_plural = 'Заметки'
