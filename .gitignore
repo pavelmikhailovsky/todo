@@ -1,4 +1,6 @@
-db.sqlite3
+env
 
+.coverage
+
+src/notes/migrations
 src/notes/__pycache__
-src/news/__pycache__
