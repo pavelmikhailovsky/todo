@@ -20,7 +20,7 @@ def get_notes_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def get_notes_detail(request, pk):
     try:
         notes = Notes.objects.get(pk=pk)
@@ -40,3 +40,8 @@ def get_notes_detail(request, pk):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        notes.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+

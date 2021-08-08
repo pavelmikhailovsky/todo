@@ -14,12 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
 class NotesSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True, required=False)
     create_at = serializers.DateTimeField(read_only=True, required=False)
-    # update_at = serializers.CharField(read_only=True, required=False)
-    update_at = serializers.DateTimeField(read_only=True, required=False)
+    update_at = serializers.CharField(read_only=True, required=False)
     user = UserSerializer(required=False)
-
-    def update(self, instance, validated_data):
-        super(NotesSerializer, self).update(instance, validated_data)
 
     class Meta:
         model = Notes
