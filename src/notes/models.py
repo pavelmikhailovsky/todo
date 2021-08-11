@@ -8,10 +8,10 @@ class Notes(models.Model):
     text = models.TextField()
     create_at = models.CharField(default=f'{datetime_now()}', max_length=50)
     update_at = models.CharField(default='Не редактирован', max_length=50)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user')
     
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(Notes, self).__init__(*args, **kwargs)
         self.__text = self.text
 
     def __str__(self) -> str:
@@ -20,7 +20,7 @@ class Notes(models.Model):
     def save(self, *args, **kwargs):
         if self.__text != self.text:
             self.update_at = f'{datetime_now()}'
-        super().save(*args, **kwargs)
+        super(Notes, self).save(*args, **kwargs)
     
     class Meta:
         verbose_name = 'заметку'
