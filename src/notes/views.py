@@ -1,47 +1,34 @@
-from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework import viewsets, decorators, status
 from rest_framework.response import Response
 
 from .models import Notes
-from .serializers import NotesSerializer
+from .serializers import NotesSerializer, AllNotesSerializer
+from .service import CountNotes
 
 
-@api_view(['GET', 'POST'])
-def get_notes_list(request):
-    if request.method == 'GET':
-        notes = Notes.objects.all().order_by('-create_at')
-        serializer = NotesSerializer(notes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serializer = NotesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class NotesViewSet(viewsets.ModelViewSet):
+    """ API for create, update, retrieve, list and destroy notes """
+    queryset = Notes.objects
+    serializer_class = NotesSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(user=self.request.user)
+        return queryset
 
 
-@api_view(['GET', 'POST', 'DELETE'])
-def get_notes_detail(request, pk):
-    try:
-        notes = Notes.objects.get(pk=pk)
-    except Notes.DoesNotExist:
-        notes = None
-        serializer = NotesSerializer(notes)
-        if serializer.is_valid():
-            pass  # незя по PEP в одну строку :(
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+@decorators.api_view()
+def count_notes(request):
+    """ Response count all notes in database """
+    if request.user.is_staff:
+        count = CountNotes()
+        if request.method == 'GET':
+            serializer = AllNotesSerializer(count)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == 'GET':
-        serializer = NotesSerializer(notes)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serializer = NotesSerializer(notes, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        notes.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(data={'detail': 'User not is staff'}, status=status.HTTP_423_LOCKED)
 
 
