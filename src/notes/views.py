@@ -1,6 +1,8 @@
 from rest_framework import viewsets, decorators, status
 from rest_framework.response import Response
 
+from drf_yasg.utils import swagger_auto_schema
+
 from .models import Notes
 from .serializers import NotesSerializer, AllNotesSerializer
 from .service import CountNotes
@@ -19,6 +21,7 @@ class NotesViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+@swagger_auto_schema(method='get', responses={200: AllNotesSerializer()})
 @decorators.api_view()
 def count_notes(request):
     """ Response count all notes in database """
